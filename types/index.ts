@@ -97,3 +97,68 @@ export interface AnnualReport {
   topKeyword?: string;
   aiSummary?: string;
 }
+
+// Memorial Types
+export interface MemorialLetter {
+  id: string;
+  title: string;
+  author: string;
+  content: string;
+  coverImageUrl?: string;
+  attachedImages?: string[];
+  backgroundMusicUrl?: string;
+  createdAt: string;
+  writtenAt: string;
+}
+
+export interface MemorialGift {
+  id: string;
+  name: string;
+  giver: string;
+  receiver: string;
+  receivedAt: string;
+  story: string;
+  imageUrl?: string;
+  price?: number;
+  sentimentScore: number; // 1-5 纪念价值
+}
+
+export interface MemorialTicket {
+  id: string;
+  title: string;
+  type: 'movie' | 'concert' | 'flight' | 'train' | 'park' | 'exhibition' | 'other';
+  imageUrl?: string;
+  date?: string;
+  location?: string;
+  extractedText?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface MemorialTimeBox {
+  id: string;
+  title: string;
+  description?: string;
+  images?: string[];
+  videos?: string[];
+  audio?: string[];
+  textContent?: string;
+  unlockDate: string;
+  isUnlocked: boolean;
+  createdAt: string;
+}
+
+export interface MemoryTag {
+  id: string;
+  name: string;
+  color: string;
+}
+
+export interface MemoryMedia {
+  id: string;
+  type: 'image' | 'video' | 'audio';
+  url: string;
+  thumbnailUrl?: string;
+  caption?: string;
+  createdAt: string;
+}
