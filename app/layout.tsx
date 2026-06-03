@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { AuthProvider } from '@/lib/auth';
+import { CoupleProvider } from '@/lib/couple';
 
 export const metadata: Metadata = {
   title: 'Love Museum - 恋爱数字博物馆',
@@ -16,7 +18,11 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          {children}
+          <AuthProvider>
+            <CoupleProvider>
+              {children}
+            </CoupleProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

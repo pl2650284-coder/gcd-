@@ -4,14 +4,20 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Moon, Sun, ChevronDown, Heart } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Moon,
+  Sun,
+  ChevronDown,
+  Heart,
+  LogOut,
+  User,
+} from 'lucide-react';
 import { useTheme } from './ThemeProvider';
+import { useAuth } from '@/lib/auth';
+import { useCouple } from '@/lib/couple';
 import { cn } from '@/lib/utils';
-
-const COUPLE_NAMES = {
-  partner1: '小明',
-  partner2: '小红',
-};
 
 // 一级导航
 const mainNavItems = [
@@ -43,8 +49,15 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
+  const { couple } = useCouple();
   const pathname = usePathname();
+
+  // 默认情侣名称
+  const partner1Name = couple?.partner1_name || '小明';
+  const partner2Name = couple?.partner2_name || '小红';
 
   // 监听滚动
   useEffect(() => {
@@ -71,6 +84,11 @@ export default function Navbar() {
     setOpenDropdown(openDropdown === name ? null : name);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setShowUserMenu(false);
+  };
+
   return (
     <nav
       className={cn(
@@ -87,7 +105,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2">
               <Heart className="w-5 h-5 text-accent" fill="currentColor" />
               <span className="font-semibold text-lg tracking-tight">
-                {COUPLE_NAMES.partner1} &amp; {COUPLE_NAMES.partner2}
+                {partner1Name} &amp; {partner2Name}
               </span>
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-400 tracking-wide">
@@ -143,6 +161,44 @@ export default function Navbar() {
                 <Sun className="w-5 h-5" />
               )}
             </button>
+
+            {/* 用户菜单 */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-accent to-orange-400 rounded-full flex items-center justify-center text-white">
+                    <User className="w-4 h-4" />
+                  </div>
+                </button>
+
+                <AnimatePresence>
+                  {showUserMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      className="absolute right-0 top-full pt-2"
+                    >
+                      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 p-2 min-w-[200px]">
+                        <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-800 mb-1">
+                          <p className="text-sm font-medium">{user.email}</p>
+                        </div>
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          退出登录
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
             {/* 移动端菜单按钮 */}
             <button
@@ -223,6 +279,19 @@ export default function Navbar() {
                   {reportNavItem.label}
                 </MobileNavLink>
               </div>
+
+              {/* 用户登出 */}
+              {user && (
+                <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-2 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    退出登录
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
